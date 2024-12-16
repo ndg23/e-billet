@@ -1,0 +1,12 @@
+<!-- Image URL -->
+<div>
+    <label for="imageUrl" class="block text-sm font-medium text-gray-700">URL de l'image</label>
+    <input type="url" 
+           id="imageUrl" 
+           name="imageUrl" 
+           th:field="*{imageUrl}"
+           class="form-input mt-1">
+    <p th:if="${#fields.hasErrors('imageUrl')}" 
+       class="mt-1 text-sm text-red-600" 
+       th:errors="*{imageUrl}"></p>
+</div> 

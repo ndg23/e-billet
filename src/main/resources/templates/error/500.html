@@ -1,0 +1,82 @@
+<!-- templates/error/500.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Erreur serveur - 500</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+            <div class="max-w-max mx-auto text-center">
+                <main class="sm:flex items-center">
+                    <p class="text-4xl font-bold text-red-600 sm:text-5xl">500</p>
+                    <div class="sm:ml-6">
+                        <div class="sm:border-l sm:border-gray-200 sm:pl-6">
+                            <h1 class="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl">
+                                Erreur serveur
+                            </h1>
+                            <p class="mt-4 text-base text-gray-500">
+                                Désolé, une erreur inattendue s'est produite. Notre équipe technique a été notifiée.
+                            </p>
+                        </div>
+                        <div class="mt-8 flex space-x-3 justify-center">
+                            <a href="/"
+                               class="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                Retour à l'accueil
+                            </a>
+                            <button onclick="location.reload()"
+                                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                Réessayer
+                            </button>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Illustration -->
+                <div class="mt-12">
+                    <img src="/images/500-illustration.svg" 
+                         alt="500 illustration" 
+                         class="h-64 w-auto mx-auto"
+                    />
+                </div>
+
+                <!-- Support -->
+                <div class="mt-12 bg-gray-50 rounded-lg p-6">
+                    <h2 class="text-lg font-medium text-gray-900">Besoin d'aide ?</h2>
+                    <div class="mt-4 text-sm text-gray-500">
+                        <p>Si le problème persiste, vous pouvez :</p>
+                        <div class="mt-4 flex flex-col space-y-4">
+                            <a href="/contact" 
+                               class="inline-flex items-center text-red-600 hover:text-red-800">
+                                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                Contacter le support
+                            </a>
+                            <a href="/faq" 
+                               class="inline-flex items-center text-red-600 hover:text-red-800">
+                                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+                                </svg>
+                                Consulter la FAQ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informations techniques -->
+                <div th:if="${@environment.getActiveProfiles().length > 0 and @environment.getActiveProfiles()[0] == 'dev'}"
+                     class="mt-8 text-left bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-sm font-medium text-gray-900">Informations techniques</h3>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <p th:text="${'Message: ' + error?.message}"></p>
+                        <p th:text="${'Trace: ' + error?.trace}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

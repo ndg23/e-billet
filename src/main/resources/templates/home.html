@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Accueil - Billetterie</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Hero Section -->
+        <section class="relative h-screen bg-black text-white overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="/images/fire.jpg" 
+                     class="w-full h-full object-cover opacity-70" 
+                     alt="Background">
+            </div>
+            <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+                <h1 class="text-5xl sm:text-7xl font-bold mb-4 tracking-tight">
+                    Vivez l'expérience.
+                </h1>
+                <p class="text-xl sm:text-2xl mb-8 max-w-2xl mx-auto text-gray-200">
+                    Découvrez et réservez les meilleurs événements en quelques clics.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="/events" class="btn-primary text-lg px-8 py-4">
+                        Découvrir les événements
+                    </a>
+                    <a href="/auth/signup" class="btn-secondary text-lg px-8 py-4">
+                        Créer un compte
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Events Section -->
+        <section class="py-20 bg-apple-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-semibold text-center mb-12">
+                    Événements à la une
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div th:each="event : ${featuredEvents}" 
+                         class="bg-white rounded-2xl shadow-apple overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-apple-hover">
+                        <div class="relative">
+                            <img th:if="${event.imageUrl}" 
+                                 th:src="${event.imageUrl}"
+                                 class="w-full h-48 object-cover" 
+                                 alt="Event Image">
+                            <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-apple-dark">
+                                <span th:text="${event.category.label}">Catégorie</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-apple-dark mb-2" 
+                                th:text="${event.name}">Event Name</h3>
+                            <p class="text-gray-600 text-sm mb-4" 
+                               th:text="${event.description}">Description</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500" 
+                                      th:text="${#temporals.format(event.date, 'dd MMM yyyy')}">Date</span>
+                                <a th:href="@{/events/{id}(id=${event.id})}" 
+                                   class="text-apple-blue hover:text-blue-700">
+                                    En savoir plus
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-semibold text-center mb-12">
+                    Explorez par catégorie
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <a th:each="category : ${categories}" 
+                       th:href="@{/events(category=${category.code})}"
+                       class="group relative aspect-square rounded-3xl overflow-hidden bg-gray-900">
+                        <img th:src="@{'/images/categories/' + ${category.code} + '.jpg'}"
+                             class="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-opacity"
+                             th:alt="${category.label}">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-white text-xl font-semibold" 
+                                  th:text="${category.label}">
+                                Catégorie
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="py-20 bg-gradient-to-r from-apple-blue to-blue-600 text-white">
+            <div class="max-w-4xl mx-auto text-center px-4">
+                <h2 class="text-4xl font-bold mb-6">
+                    Prêt à vivre des moments inoubliables ?
+                </h2>
+                <p class="text-xl mb-8 text-gray-100">
+                    Rejoignez notre communauté et ne manquez plus aucun événement.
+                </p>
+                <a href="/auth/signup" 
+                   class="inline-block bg-white text-apple-blue px-8 py-4 rounded-full font-semibold hover:bg-opacity-90 transition-all">
+                    Commencer maintenant
+                </a>
+            </div>
+        </section>
+    </div>
+</body>
+</html> 

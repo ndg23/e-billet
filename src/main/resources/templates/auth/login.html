@@ -1,0 +1,113 @@
+<!-- templates/users/login.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Connexion</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Hero Section with Background -->
+        <div class="relative min-h-screen flex flex-col">
+            <!-- Background with Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-b from-apple-gray to-white"></div>
+
+            <!-- Main Content -->
+            <div class="relative flex-grow flex items-center justify-center px-4 py-12">
+                <div class="max-w-md w-full">
+                    <!-- Header -->
+                    <div class="text-center mb-12">
+                        <h1 class="text-4xl font-semibold text-apple-dark tracking-tight">
+                            Bienvenue
+                        </h1>
+                        <p class="mt-3 text-lg text-gray-600">
+                            Connectez-vous pour accéder à vos billets
+                        </p>
+                    </div>
+
+                    <!-- Login Form Card -->
+                    <div class="bg-white/80 backdrop-blur-lg rounded-3xl shadow-apple p-8 space-y-6
+                               transform transition-all duration-300 hover:shadow-apple-hover hover:-translate-y-1">
+                        <form th:action="@{/auth/login}" method="post" class="space-y-6">
+                            <!-- Error Alert -->
+                            <div th:if="${param.error}" 
+                                 class="p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm">
+                                Identifiants incorrects. Veuillez réessayer.
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="space-y-2">
+                                <label for="username" class="block text-sm font-medium text-gray-700">
+                                    Email
+                                </label>
+                                <input type="email" 
+                                       id="username"
+                                       name="username"
+                                       class="form-input" 
+                                       required
+                                       autocomplete="email">
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <label for="password" class="block text-sm font-medium text-gray-700">
+                                        Mot de passe
+                                    </label>
+                                    <a href="#" class="text-sm font-medium text-apple-blue hover:text-blue-700">
+                                        Mot de passe oublié ?
+                                    </a>
+                                </div>
+                                <input type="password"
+                                       id="password"
+                                       name="password"
+                                       class="form-input"
+                                       required>
+                            </div>
+
+                            <!-- Remember Me -->
+                            <div class="flex items-center">
+                                <input type="checkbox"
+                                       id="remember-me"
+                                       name="remember-me"
+                                       class="h-4 w-4 rounded border-gray-300 text-apple-blue focus:ring-apple-blue">
+                                <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                                    Se souvenir de moi
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" 
+                                    class="w-full btn-primary">
+                                Se connecter
+                            </button>
+                        </form>
+
+                        <!-- Signup Link -->
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600">
+                                Pas encore de compte ?
+                                <a th:href="@{/auth/signup}" 
+                                   class="font-medium text-apple-blue hover:text-blue-700">
+                                    Créer un compte
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="mt-8 text-center">
+                        <p class="text-xs text-gray-500">
+                            En vous connectant, vous acceptez nos
+                            <a href="#" class="text-apple-blue hover:text-blue-700">Conditions d'utilisation</a>
+                            et notre
+                            <a href="#" class="text-apple-blue hover:text-blue-700">Politique de confidentialité</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

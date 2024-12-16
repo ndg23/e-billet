@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Événements</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Hero Section -->
+        <section class="relative bg-black text-white py-20 overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="https://cdn.pixabay.com/photo/2018/05/31/11/54/celebration-3443777_1280.jpg" 
+                     class="w-full h-full object-cover opacity-70" 
+                     alt="Events Background">
+            </div>
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl sm:text-5xl font-bold mb-6 tracking-tight">
+                        Tous nos événements
+                    </h1>
+                    <p class="text-xl text-gray-200 max-w-2xl mx-auto">
+                        Trouvez et réservez vos billets pour les meilleurs événements
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Filter Section -->
+        <section class="bg-apple-gray py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-2xl shadow-apple p-6 -mt-16 relative z-20">
+                    <form th:action="@{/events}" method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="relative">
+                            <input type="text" 
+                                   name="search" 
+                                   th:value="${param.search}" 
+                                   class="form-input pl-10" 
+                                   placeholder="Rechercher un événement...">
+                            <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" 
+                                 fill="none" 
+                                 viewBox="0 0 24 24" 
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" 
+                                      stroke-linejoin="round" 
+                                      stroke-width="2" 
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <select name="category" class="form-input">
+                            <option value="">Toutes les catégories</option>
+                            <option th:each="category : ${categories.entrySet()}"
+                                    th:value="${category.key}"
+                                    th:text="${category.value}"
+                                    th:selected="${param.category == category.key}">
+                            </option>
+                        </select>
+                        <button type="submit" class="btn-primary">
+                            Rechercher
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Grid -->
+        <section class="bg-apple-gray py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div th:each="event : ${events}" 
+                         class="bg-white rounded-2xl  overflow-hidden transform transition-all duration-300 hover:bg-blue-100 cursor-pointer">
+                        <div class="relative">
+                            <img th:if="${event.imageUrl}" 
+                                 th:src="${event.imageUrl}" 
+                                 class="w-full h-48 object-cover" 
+                                 alt="Event Image">
+                            <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-apple-dark">
+                                <span th:text="${event.category.label}">Catégorie</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-semibold text-apple-dark" 
+                                    th:text="${event.name}">Nom de l'événement</h3>
+                                <span class="text-2xl font-bold text-apple-blue" 
+                                      th:text="${#numbers.formatDecimal(event.price, 0, 'COMMA', 0, 'POINT')} + ' FCFA'">
+                                    Prix
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4" 
+                               th:text="${event.description}">Description</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex items-center text-gray-500">
+                                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="text-sm" 
+                                              th:text="${#temporals.format(event.date, 'dd MMM yyyy')}">
+                                            Date
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center text-gray-500">
+                                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <span class="text-sm" th:text="${event.location}">
+                                            Lieu
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 flex justify-between items-center">
+                                <span class="text-sm text-gray-500" 
+                                      th:text="${event.availableSeats + ' places disponibles'}">
+                                    Places disponibles
+                                </span>
+                                <a th:href="@{/events/{id}(id=${event.id})}" 
+                                   class="btn-primary">
+                                    Réserver
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav th:if="${events.totalPages > 1}" class="mt-12 flex justify-center">
+                    <div class="flex space-x-2">
+                        <a th:each="pageNumber : ${#numbers.sequence(0, events.totalPages - 1)}"
+                           th:href="@{/events(page=${pageNumber}, search=${param.search}, category=${param.category})}"
+                           th:text="${pageNumber + 1}"
+                           th:class="${pageNumber == events.number} ? 
+                                    'px-4 py-2 bg-apple-blue text-white rounded-full' : 
+                                    'px-4 py-2 bg-white text-apple-dark rounded-full hover:bg-gray-100'">
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

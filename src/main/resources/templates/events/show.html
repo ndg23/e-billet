@@ -1,0 +1,17 @@
+<!-- Bouton de réservation -->
+<div th:if="${#authorization.expression('isAuthenticated()')}">
+    <form th:action="@{/tickets/create}" method="post">
+        <input type="hidden" name="eventId" th:value="${event.id}">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Quantité</label>
+            <input type="number" name="quantity" min="1" max="10" value="1" 
+                   class="form-input mt-1">
+        </div>
+        <button type="submit" class="btn-primary">Réserver</button>
+    </form>
+</div>
+<div th:unless="${#authorization.expression('isAuthenticated()')}" 
+     class="text-center py-4">
+    <p class="text-gray-600">Veuillez vous <a th:href="@{/auth/login}" 
+       class="text-apple-blue hover:underline">connecter</a> pour réserver des billets</p>
+</div> 

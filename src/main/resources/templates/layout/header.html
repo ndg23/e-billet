@@ -1,0 +1,19 @@
+<!-- templates/layout/header.html -->
+<header th:fragment="header" class="bg-white shadow">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="/" class="text-2xl font-bold text-gray-800">Billetterie</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div th:if="${#authentication.principal != null}">
+                    <span class="text-gray-600" th:text="${#authentication.principal.username}"></span>
+                    <a href="/logout" class="ml-4 text-red-600 hover:text-red-800">Déconnexion</a>
+                </div>
+                <div th:unless="${#authentication.principal != null}">
+                    <a href="/login" class="text-blue-600 hover:text-blue-800">Connexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

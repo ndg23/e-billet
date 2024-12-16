@@ -1,0 +1,14 @@
+{
+  "name": "gestion-billetterie",
+  "version": "1.0.0",
+  "description": "Gestion de billetterie",
+  "scripts": {
+    "watch:css": "tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/style.css --watch",
+    "build:css": "tailwindcss -i ./src/main/resources/static/css/input.css -o ./src/main/resources/static/css/style.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  }
+} 

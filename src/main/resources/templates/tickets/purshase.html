@@ -1,0 +1,175 @@
+<!-- templates/tickets/purchase.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Acheter des billets</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="max-w-3xl mx-auto">
+            <!-- Étapes d'achat -->
+            <div class="mb-8">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-between">
+                        <span class="bg-white px-4 text-sm font-medium text-primary-600 flex items-center">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary-600 mr-2">
+                                1
+                            </span>
+                            Sélection
+                        </span>
+                        <span class="bg-white px-4 text-sm font-medium text-gray-500 flex items-center">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 mr-2">
+                                2
+                            </span>
+                            Paiement
+                        </span>
+                        <span class="bg-white px-4 text-sm font-medium text-gray-500 flex items-center">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 mr-2">
+                                3
+                            </span>
+                            Confirmation
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Détails de l'événement -->
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h1 class="text-2xl font-bold text-gray-900" th:text="${event.name}">Nom de l'événement</h1>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+                              th:text="${event.availableSeats} + ' places disponibles'">
+                        </span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Image de l'événement -->
+                        <img th:if="${event.imageUrl}" 
+                             th:src="${event.imageUrl}"
+                             class="w-full h-64 object-cover rounded-lg"
+                             alt="Event image">
+
+                        <!-- Informations de l'événement -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center text-gray-600">
+                                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span th:text="${#temporals.format(event.date, 'dd MMMM yyyy HH:mm')}">Date</span>
+                                </div>
+                                <div class="flex items-center text-gray-600">
+                                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <span th:text="${event.location}">Lieu</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-gray-600" th:text="${event.description}">Description</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire d'achat -->
+            <form th:action="@{/tickets/purchase}" method="post" class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="p-6">
+                    <input type="hidden" name="eventId" th:value="${event.id}">
+                    
+                    <!-- Sélection des billets -->
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nombre de billets</label>
+                            <div class="mt-2">
+                                <select name="quantity" 
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                                        th:with="maxTickets=${T(java.lang.Math).min(event.availableSeats, 10)}"
+                                        x-data="{ quantity: 1 }"
+                                        x-model="quantity">
+                                    <option th:each="i : ${#numbers.sequence(1, maxTickets)}"
+                                            th:value="${i}"
+                                            th:text="${i}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Résumé de la commande -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <dl class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <dt class="text-sm text-gray-600">Prix unitaire</dt>
+                                    <dd class="text-sm font-medium text-gray-900" 
+                                        th:text="${#numbers.formatDecimal(event.price, 0, 'COMMA', 2, 'POINT')} + ' €'">
+                                    </dd>
+                                </div>
+                                <div class="flex items-center justify-between border-t border-gray-200 pt-4">
+                                    <dt class="text-base font-medium text-gray-900">Total</dt>
+                                    <dd class="text-base font-medium text-gray-900" 
+                                        x-text="'€' + (quantity * [[${event.price}]]).toFixed(2)">
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="mt-6 flex items-center justify-end space-x-4">
+                        <button type="button" 
+                                onclick="history.back()"
+                                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                            Annuler
+                        </button>
+                        <button type="submit"
+                                class="rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                            Procéder au paiement
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Informations supplémentaires -->
+            <div class="mt-6">
+                <div class="rounded-md bg-blue-50 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <h3 class="text-sm font-medium text-blue-800">Informations importantes</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>Les billets ne sont ni échangeables ni remboursables</li>
+                                    <li>Une pièce d'identité pourra vous être demandée à l'entrée</li>
+                                    <li>Les billets seront envoyés par email après confirmation du paiement</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts spécifiques -->
+    <div layout:fragment="scripts">
+        <script>
+            // Scripts supplémentaires si nécessaire
+        </script>
+    </div>
+</body>
+</html>

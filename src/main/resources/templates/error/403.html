@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Accès refusé</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="min-h-[80vh] flex items-center justify-center">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-apple-dark mb-4">403 - Accès refusé</h1>
+                <p class="text-gray-600 mb-8">Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
+                <a href="/" class="btn-primary">Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

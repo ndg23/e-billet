@@ -1,0 +1,41 @@
+<!-- templates/tickets/my-tickets.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Mes Billets</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Messages de succès/erreur -->
+        <div th:if="${success}" class="alert alert-success" role="alert">
+            <p th:text="${success}"></p>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Liste des billets -->
+        <div class="tickets-list">
+            <div th:each="ticket : ${tickets}" class="ticket-card">
+                <div class="ticket-info">
+                    <h3 th:text="${ticket.event.name}">Nom de l'événement</h3>
+                    <p th:text="${#temporals.format(ticket.event.date, 'dd/MM/yyyy HH:mm')}">Date</p>
+                    <p th:text="${ticket.event.location}">Lieu</p>
+                    <p>Quantité: <span th:text="${ticket.quantity}"></span></p>
+                    <p>Statut: <span th:text="${ticket.status}"></span></p>
+                </div>
+                
+                <div class="ticket-actions" th:if="${ticket.status == 'ACTIVE'}">
+                    <form th:action="@{/tickets/{id}/cancel(id=${ticket.id})}"
+                          method="POST"
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ce billet ?');">
+                        <button type="submit" class="btn btn-danger">Annuler</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
