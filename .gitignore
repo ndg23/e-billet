@@ -35,3 +35,16 @@ build/
 ### Application Specific ###
 application-dev.properties
 *.log
+
+### Docker ###
+.dockerignore
+
+### Docker ###
+.dockerignore
+
+### Project ###
+/projet-billeterie.zip
+
+### Git ###
+.gitignore
+        
