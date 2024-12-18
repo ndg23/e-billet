@@ -3,25 +3,23 @@ package com.gestion.config;
 import com.gestion.model.Event;
 import com.gestion.model.EventCategory;
 import com.gestion.model.Role;
-import com.gestion.model.Ticket;
 import com.gestion.model.User;
 import com.gestion.repository.EventRepository;
 import com.gestion.repository.RoleRepository;
-import com.gestion.repository.TicketRepository;
 import com.gestion.repository.UserRepository;
+import com.gestion.model.Role.RoleType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.stream.IntStream;
+import java.util.Arrays;
+import java.util.HashSet;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -30,160 +28,148 @@ public class DataInitializer implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Autowired
-    private EventRepository eventRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    private TicketRepository ticketRepository;
+    private EventRepository eventRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @PostConstruct
-    public void initializeData() {
-        // Initialiser les rôles d'abord
-        initRoles();
-        
-        // Nettoyer les données existantes
-        ticketRepository.deleteAll();
-        eventRepository.deleteAll();
-        userRepository.deleteAll();
-
-        // Créer des utilisateurs avec rôles
-        User admin = createAdminUser("admin@example.com", "Admin");
-        User user1 = createCustomerUser("user1@example.com", "John Doe");
-        User user2 = createCustomerUser("user2@example.com", "Jane Smith");
-
-        // Créer des événements
-        List<Event> events = createEvents();
-
-        // Créer des tickets
-        createTickets(events, List.of(admin, user1, user2));
-    }
+    @Value("${app.init-data:false}")
+    private boolean shouldInitializeData;
 
     @Override
-    public void run(String... args) throws Exception {
-        // Initialiser les rôles
-        if (roleRepository.count() == 0) {
-            roleRepository.save(new Role(Role.RoleType.ROLE_ADMIN));
-            roleRepository.save(new Role(Role.RoleType.ROLE_CUSTOMER));
+    @Transactional
+    public void run(String... args) {
+        if (!shouldInitializeData) {
+            return;
         }
 
-        // Créer un admin par défaut si aucun n'existe
-        if (userRepository.count() == 0) {
-            User admin = new User();
-            admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("Admin123@"));
-            admin.setFullName("Admin");
-            admin.setActive(true);
-           
-            Role adminRole = roleRepository.findByName(Role.RoleType.ROLE_ADMIN)
-                .orElseThrow(() -> new RuntimeException("Role Admin non trouvé"));
-            admin.addRole(adminRole);
-            
-            userRepository.save(admin);
-        }
+        // 1. Initialiser les rôles
+        initRoles();
+
+        // 2. Créer les utilisateurs par défaut
+        createDefaultUsers();
+
+        // 3. Créer quelques événements de test
+        createSampleEvents();
     }
 
     private void initRoles() {
         if (roleRepository.count() == 0) {
-            roleRepository.save(new Role(Role.RoleType.ROLE_ADMIN));
-            roleRepository.save(new Role(Role.RoleType.ROLE_CUSTOMER));
+            Arrays.stream(RoleType.values()).forEach(roleType -> {
+                Role role = new Role();
+                role.setName(roleType);
+                roleRepository.save(role);
+            });
         }
     }
 
-    private User createAdminUser(String email, String fullName) {
-        User user = createBaseUser(email, fullName);
-        Role adminRole = roleRepository.findByName(Role.RoleType.ROLE_ADMIN)
-            .orElseThrow(() -> new RuntimeException("Role Admin non trouvé"));
-        user.addRole(adminRole);
-        return userRepository.save(user);
+    private void createDefaultUsers() {
+        if (userRepository.count() <= 3) {
+            // Récupérer les rôles
+            Role adminRole = roleRepository.findByName(RoleType.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin non trouvé"));
+            Role customerRole = roleRepository.findByName(RoleType.ROLE_CUSTOMER)
+                .orElseThrow(() -> new RuntimeException("Role Customer non trouvé"));
+
+            // Créer admin
+            User admin = new User();
+            admin.setFullName("Antoine Diouf");
+            admin.setEmail("admin@gmail.com");
+            admin.setPassword(passwordEncoder.encode("Admin123@"));
+            admin.setRoles(new HashSet<>(Arrays.asList(adminRole)));
+            admin.setActive(true);
+            userRepository.save(admin);
+
+            // Créer utilisateur normal
+            User user = new User();
+            user.setFullName("Madiouf");
+            user.setEmail("diouf@gmail.com");
+            user.setPassword(passwordEncoder.encode("User123@"));
+            user.setRoles(new HashSet<>(Arrays.asList(customerRole)));
+            user.setActive(true);
+            userRepository.save(user);
+            User user2 = new User();
+            user2.setFullName("Diop Ondo");
+            user2.setEmail("diop@gmail.com");
+            user2.setPassword(passwordEncoder.encode("User123@"));
+            user2.setRoles(new HashSet<>(Arrays.asList(customerRole)));
+            user2.setActive(true);
+            userRepository.save(user2);
+            User user3 = new User();
+            user3.setFullName("Japhet Obame");
+            user3.setEmail("japhet@gmail.com");
+            user3.setPassword(passwordEncoder.encode("User123@"));
+            user3.setRoles(new HashSet<>(Arrays.asList(customerRole)));
+            user3.setActive(true);
+            userRepository.save(user3);
+
+        }
     }
 
-    private User createCustomerUser(String email, String fullName) {
-        User user = createBaseUser(email, fullName);
-        Role customerRole = roleRepository.findByName(Role.RoleType.ROLE_CUSTOMER)
-            .orElseThrow(() -> new RuntimeException("Role Customer non trouvé"));
-        user.addRole(customerRole);
-        return userRepository.save(user);
-    }
+    private void createSampleEvents() {
+        if (eventRepository.count() <= 5) {
+            Event event1 = new Event();
+            event1.setName("Concert de Jazz");
+            event1.setDescription("Une soirée jazz exceptionnelle");
+            event1.setDate(LocalDateTime.now().plusDays(30));
+            event1.setLocation("Salle Pleyel");
+            event1.setPrice(new BigDecimal("50.00"));
+            event1.setTotalSeats(100);
+            event1.setAvailableSeats(100);
+            event1.setCategory(EventCategory.MUSIC);
+            event1.setActive(true);
+            eventRepository.save(event1);
 
-    private User createBaseUser(String email, String fullName) {
-        User user = new User();
-        user.setEmail(email);
-        user.setFullName(fullName);
-        user.setPassword(passwordEncoder.encode("Password123@"));
-        user.setActive(true);
-        return user;
-    }
+            Event event2 = new Event();
+            event2.setName("Match de Football");
+            event2.setDescription("Match de championnat");
+            event2.setDate(LocalDateTime.now().plusDays(15));
+            event2.setLocation("Stade Municipal");
+            event2.setPrice(new BigDecimal("25.00"));
+            event2.setTotalSeats(200);
+            event2.setAvailableSeats(200);
+            event2.setCategory(EventCategory.SPORTS);
+            event2.setActive(true);
+            eventRepository.save(event2);
 
-    private List<Event> createEvents() {
-        String[] eventNames = {
-            "Conférence Tech 2024", 
-            "Festival de Musique", 
-            "Marathon Urbain", 
-            "Exposition d'Art", 
-            "Salon du Livre",
-            "Concert de Jazz",
-            "Festival de Danse",
-            "Conférence sur l'IA",
-            "Exposition de Photographie",
-            "Festival de Cuisine",
-            "Concert de Pop",
-            "Festival de Mode",
-            "Concert de Rock",
-            "Festival de Musique",
-            "Concert de Jazz",
-            "Festival de Danse",
-            "Concert de Pop",
-            "Festival de Mode",
-            "Concert de Rock",
-        };
+            Event event3 = new Event();
+            event3.setName("Exposition d'Art");
+            event3.setDescription("Une exposition d'art moderne");
+            event3.setDate(LocalDateTime.now().plusDays(45));
+            event3.setLocation("Musée d'Art Moderne");
+            event3.setPrice(new BigDecimal("30.00"));
+            event3.setTotalSeats(150);
+            event3.setAvailableSeats(150);
+            event3.setCategory(EventCategory.MUSIC);
+            event3.setActive(true);
+            eventRepository.save(event3);
 
-        EventCategory[] categories = EventCategory.values();
-        Random random = new Random();
+            Event event4 = new Event();
+            event4.setName("Festival de Musique");
+            event4.setDescription("Un festival de musique en plein air");
+            event4.setDate(LocalDateTime.now().plusDays(60));
+            event4.setLocation("Parc de la Villette");
+            event4.setPrice(new BigDecimal("40.00"));
+            event4.setTotalSeats(300);
+            event4.setAvailableSeats(300);
+            event4.setCategory(EventCategory.MUSIC);
+            event4.setActive(true);
+            eventRepository.save(event4);
 
-        return IntStream.range(0, 15)
-            .mapToObj(i -> {
-                Event event = new Event();
-                event.setName(eventNames[i]);
-                event.setDescription("Description détaillée pour " + eventNames[i]);
-                event.setDate(LocalDateTime.now().plusDays(random.nextInt(30) + 15));
-                event.setLocation("Lieu " + (i + 1));
-                event.setTotalSeats(random.nextInt(200) + 100);
-                event.setAvailableSeats(event.getTotalSeats());
-                event.setPrice(BigDecimal.valueOf(random.nextDouble(20, 100)));
-                event.setCategory(categories[random.nextInt(categories.length)]);
-                event.setImageUrl("/images/event-" + (i + 1) + ".jpg");
-                event.setActive(true);
-                return eventRepository.save(event);
-            })
-            .toList();
-    }
-
-    private void createTickets(List<Event> events, List<User> users) {
-        Random random = new Random();
-
-        events.forEach(event -> {
-            // Créer quelques tickets pour chaque événement
-            IntStream.range(0, random.nextInt(10) + 5)
-                .forEach(i -> {
-                    Ticket ticket = new Ticket();
-                    ticket.setEvent(event);
-                    ticket.setUser(users.get(random.nextInt(users.size())));
-                    ticket.setTicketNumber(UUID.randomUUID().toString());
-                    ticket.setPurchaseDate(LocalDateTime.now());
-                    ticket.setQuantity(1);
-                    ticket.setStatus("ACTIVE");
-                    
-                    // Réduire les places disponibles
-                    event.setAvailableSeats(event.getAvailableSeats() - 1);
-                    eventRepository.save(event);
-
-                    ticketRepository.save(ticket);
-                });
-        });
+            Event event5 = new Event();
+            event5.setName("Concert de Jazz");
+            event5.setDescription("Une soirée jazz exceptionnelle");
+            event5.setDate(LocalDateTime.now().plusDays(30));
+            event5.setLocation("Salle Pleyel");
+            event5.setPrice(new BigDecimal("50.00"));
+            event5.setTotalSeats(100);
+            event5.setAvailableSeats(100);
+            event5.setCategory(EventCategory.MUSIC);
+            event5.setActive(true);
+            eventRepository.save(event5);
+        }
     }
 }

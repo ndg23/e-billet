@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.gestion.dto.EventCategoryDTO;
 import com.gestion.model.Event;
 import com.gestion.model.EventCategory;
 import com.gestion.services.EventService;
@@ -34,7 +35,8 @@ public class HomeController {
             List<Event> featuredEvents = eventService.getFeaturedEvents();
             model.addAttribute("featuredEvents", featuredEvents);
 
-            List<EventCategory> categories = Arrays.stream(EventCategory.values())
+            List<EventCategoryDTO> categories = Arrays.stream(EventCategory.values())
+                .map(cat -> new EventCategoryDTO(cat.name(), cat.getLabel()))
                 .collect(Collectors.toList());
             model.addAttribute("categories", categories);
 

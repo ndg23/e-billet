@@ -79,7 +79,7 @@
                     <a th:each="category : ${categories}" 
                        th:href="@{/events(category=${category.code})}"
                        class="group relative aspect-square rounded-3xl overflow-hidden bg-gray-900">
-                        <img th:src="@{'/images/categories/' + ${category.code} + '.jpg'}"
+                        <img th:src="@{'/images/categories/default.jpg'}"
                              class="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-opacity"
                              th:alt="${category.label}">
                         <div class="absolute inset-0 flex items-center justify-center">

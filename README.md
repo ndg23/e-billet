@@ -23,30 +23,48 @@ Application de gestion de billetterie développée avec Spring Boot. Cette appli
   - TailwindCSS
   - Alpine.js
 
-## Installation
+## 🚀 Démarrage rapide
 
-1. Cloner le projet : 
-    ```bash
-    git clone https://github.com/ndg23/e-billet.git
-    cd e-billet
-    ```
+### 1. Base de données
+```bash
+# Créer la base de données PostgreSQL
+createdb gbillet
+```
 
-2. Configuration de la base de données :
-   - Créer une base de données PostgreSQL nommée `gbillet`
-   - Modifier `src/main/resources/application.properties` avec vos paramètres :
-     ```properties
-     spring.datasource.url=jdbc:postgresql://localhost:5432/gbillet
-     spring.datasource.username=votre_username
-     spring.datasource.password=votre_password
-     ```
+### 2. Cloner et configurer
+```bash
+# Cloner le projet
+git clone https://github.com/ndg23/e-billet.git
+cd e-billet
 
-3. Compiler et lancer l'application :
-    ```bash
-    mvn clean install
-    mvn spring-boot:run
-    ```
+# Configurer la base de données dans application.properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/gbillet
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+```
 
-4. Accéder à l'application : http://localhost:8080
+### 3. Compiler et lancer
+```bash
+# Compiler le projet
+mvn clean package -DskipTests
+
+# Lancer l'application
+java -jar target/gestion-0.0.1-SNAPSHOT.jar
+```
+
+### 4. Accéder à l'application
+- URL: http://localhost:8080
+- Admin: admin@example.com / Admin123@
+- User: user@example.com / User123@
+
+### 🐳 Avec Docker
+```bash
+# Construire l'image
+docker build -t e-billet .
+
+# Lancer le conteneur
+docker run -p 8080:8080 e-billet
+```
 
 ## Comptes de test
 
@@ -56,7 +74,7 @@ Application de gestion de billetterie développée avec Spring Boot. Cette appli
 
 - **Utilisateur**
   - Email : user@example.com
-  - Mot de passe : User123@
+  - Mot de passe : Password123@
 
 ## Fonctionnalités principales
 

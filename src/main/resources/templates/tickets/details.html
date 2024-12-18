@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Détails du Billet</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-b from-apple-gray to-white">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-4xl font-semibold text-apple-dark tracking-tight">
+                            Billet #<span th:text="${ticket.ticketNumber}"></span>
+                        </h1>
+                        <p class="mt-2 text-lg text-gray-600" th:text="${ticket.event.name}">
+                            Nom de l'événement
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                              th:classappend="${ticket.status == T(com.gestion.model.Ticket).STATUS_ACTIVE} ? 'bg-green-100 text-green-800' : 
+                                              (${ticket.status == T(com.gestion.model.Ticket).STATUS_USED} ? 'bg-blue-100 text-blue-800' : 
+                                              'bg-gray-100 text-gray-800')"
+                              th:text="${ticket.status == T(com.gestion.model.Ticket).STATUS_ACTIVE} ? 'Valide' : 
+                                       (${ticket.status == T(com.gestion.model.Ticket).STATUS_USED} ? 'Utilisé' : 
+                                       'Annulé')">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails du Billet -->
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+            <div class="bg-white rounded-2xl shadow-apple overflow-hidden">
+                <!-- QR Code Section -->
+                <div class="p-8 text-center border-b border-gray-100">
+                    <div class="inline-block p-4 bg-white rounded-lg shadow-sm">
+                        <!-- Placeholder pour le QR Code -->
+                        <img th:src="@{'/api/tickets/' + ${ticket.id} + '/qr-code'}" 
+                             alt="QR Code"
+                             class="w-48 h-48">
+                    </div>
+                </div>
+
+                <!-- Informations de l'événement -->
+                <div class="p-8 space-y-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Date et Heure -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Date et Heure</h3>
+                            <p class="mt-1 text-lg text-apple-dark" 
+                               th:text="${#temporals.format(ticket.event.date, 'dd MMMM yyyy HH:mm')}">
+                            </p>
+                        </div>
+
+                        <!-- Lieu -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Lieu</h3>
+                            <p class="mt-1 text-lg text-apple-dark" th:text="${ticket.event.location}"></p>
+                        </div>
+
+                        <!-- Quantité -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Quantité</h3>
+                            <p class="mt-1 text-lg text-apple-dark" 
+                               th:text="${ticket.quantity + ' billet' + (ticket.quantity > 1 ? 's' : '')}">
+                            </p>
+                        </div>
+
+                        <!-- Date d'achat -->
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Date d'achat</h3>
+                            <p class="mt-1 text-lg text-apple-dark" 
+                               th:text="${#temporals.format(ticket.purchaseDate, 'dd MMMM yyyy HH:mm')}">
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-8 flex justify-end space-x-4" th:if="${ticket.status == 'ACTIVE'}">
+                        <!-- Télécharger -->
+                        <a th:href="@{/tickets/{id}/download(id=${ticket.id})}" 
+                           class="btn-secondary">
+                            <svg class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Télécharger
+                        </a>
+
+                        <!-- Annuler -->
+                        <form th:action="@{/tickets/{id}/cancel(id=${ticket.id})}" 
+                              method="post"
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ce billet ?')">
+                            <button type="submit" class="btn-primary bg-red-600 hover:bg-red-700">
+                                <svg class="h-5 w-5 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Annuler le billet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
